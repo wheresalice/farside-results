@@ -1,0 +1,4 @@
+*~
+*.pyc
+*/*.pyc
+farside-results.egg-info
