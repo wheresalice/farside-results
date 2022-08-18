@@ -1,4 +1,5 @@
 *~
 *.pyc
 */*.pyc
-farside-results.egg-info
+.idea/
+farside_results.egg-info/

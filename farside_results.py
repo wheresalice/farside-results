@@ -7,18 +7,21 @@ name = 'Farside Results'
 description = 'Rewrite results with farside links'
 default_on = True
 
-
 urlmap = {
-        'https://www.reddit.com': 'reddit',
-        'https://redit.com': 'reddit',
-        'https://old.reddit.com': 'reddit',
-        'https://twitter.com': 'twitter',
-        'https://mobile.twitter.com': 'twitter',
-        'https://imgur.com': 'imgur',
-        'https://youtu.be': 'youtube',
-        'https://www.youtube.com': 'youtube',
-        'https://medium.com': 'medium'
-        }
+    'https://www.reddit.com': 'reddit',
+    'https://redit.com': 'reddit',
+    'https://old.reddit.com': 'reddit',
+    'https://twitter.com': 'twitter',
+    'https://mobile.twitter.com': 'twitter',
+    'https://imgur.com': 'imgur',
+    'https://i.imgur.com': 'imgur',
+    'https://youtu.be': 'youtube',
+    'https://www.youtube.com': 'youtube',
+    'https://medium.com': 'medium',
+    'https://wikipedia.org': 'wikipedia',
+    'https://en.wikipedia.org': 'wikipedia'  # @todo what about the other locales?
+}
+
 
 def new_generic(url, redirect):
     url_arr = list(urlsplit(url))
@@ -28,8 +31,8 @@ def new_generic(url, redirect):
     return urlunsplit(url_arr)
 
 
-"""Scribe only handles individual posts, so detect them"""
 def new_medium(url):
+    # Scribe doesn't handle anything except individual blog posts
     url_arr = list(urlsplit(url))
     path = url_arr[2]
     if path.startswith("/@"):
@@ -43,8 +46,13 @@ def new_youtube(url):
 
 
 def new_imgur(url):
-    # @todo ignore .gifv files
-    return new_generic(url, "rimgo")
+    # Rimgo doesn't handle gifv links
+    url_arr = list(urlsplit(url))
+    path = url_arr[2]
+    if path.endswith(".gifv"):
+        return url
+    else:
+        return new_generic(url, "rimgo")
 
 
 def new_reddit(url):
@@ -53,6 +61,10 @@ def new_reddit(url):
 
 def new_twitter(url):
     return new_generic(url, "nitter")
+
+
+def new_wikipedia(url):
+    return new_generic(url, 'wikiless')
 
 
 def mk_https(url: str):
@@ -74,4 +86,3 @@ def on_result(request, search, result):
         result['url'] = replacement
         result['parsed_url'] = urlparse(replacement)
     return True
-
